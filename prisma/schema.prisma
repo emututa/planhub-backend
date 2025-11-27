@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model admins {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name           String    @db.VarChar(100)
+  email          String    @unique @db.VarChar(150)
+  password       String    @db.VarChar(255)
+  mobile         String    @db.VarChar(20)
+  created_by     String?   @db.Uuid
+  created_at     DateTime? @default(now()) @db.Timestamp(6)
+  creator        admins?   @relation("AdminCreator", fields: [created_by], references: [id])
+  created_admins admins[]  @relation("AdminCreator")
+  created_events events[]  @relation("AdminCreatedEvents")
+}
+
+model users {
+  id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                String                @db.VarChar(100)
+  email               String                @unique @db.VarChar(150)
+  password            String                @db.VarChar(255)
+  mobile              String                @db.VarChar(20)
+  created_at          DateTime?             @default(now()) @db.Timestamp(6)
+  event_registrations event_registrations[]
+  posts               posts[]
+}
+
+model event_registrations {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id       String?   @db.Uuid
+  event_id      String?   @db.Uuid
+  registered_at DateTime? @default(now()) @db.Timestamp(6)
+  approved_at   DateTime? @db.Timestamp(6)
+  approved_by   String?   @db.Uuid
+  status        String    @default("pending") @db.VarChar(20)
+  events        events?   @relation(fields: [event_id], references: [id], onDelete: Cascade)
+  users         users?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model events {
+  id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title               String                @db.VarChar(200)
+  description         String?
+  image_url           String?
+  event_date          DateTime              @db.Timestamp(6)
+  created_at          DateTime?             @default(now()) @db.Timestamp(6)
+  created_by          String?               @db.Uuid
+  event_registrations event_registrations[]
+  admin               admins?               @relation("AdminCreatedEvents", fields: [created_by], references: [id])
+}
+
+model posts {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id     String?   @db.Uuid
+  title       String    @db.VarChar(200)
+  description String?
+  image_url   String?
+  created_at  DateTime? @default(now()) @db.Timestamp(6)
+  updated_at  DateTime? @default(now()) @db.Timestamp(6)
+  users       users?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}

@@ -1,0 +1,28 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.sendSMS = sendSMS;
+// src/utils/sms.ts
+async function sendSMS(phoneNumber, message) {
+    try {
+        // TODO: Implement SMS sending with Sendchamp or your SMS provider
+        console.log(`SMS to ${phoneNumber}: ${message}`);
+        // For now, just log it. Add your SMS provider implementation here later
+        // Example with Sendchamp:
+        // const response = await fetch('https://api.sendchamp.com/api/v1/sms/send', {
+        //   method: 'POST',
+        //   headers: {
+        //     'Authorization': `Bearer ${process.env.SENDCHAMP_API_KEY}`,
+        //     'Content-Type': 'application/json'
+        //   },
+        //   body: JSON.stringify({
+        //     to: phoneNumber,
+        //     message: message,
+        //     sender_name: process.env.SMS_SENDER_NAME || 'PlanHub'
+        //   })
+        // });
+    }
+    catch (error) {
+        console.error('SMS sending failed:', error);
+        // Don't throw error - we don't want SMS failures to break registration
+    }
+}
